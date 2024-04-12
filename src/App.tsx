@@ -21,6 +21,8 @@ import { fetchMovies } from "./features/moviesSlice";
 function App() {
   const [page, setPage] = useState(1);
   const [title, setTitle] = useState("Pokemon");
+  const [year, setYear] = useState<number | "">("");
+  const [type, setType] = useState<"movie" | "series" | "episode" | null>(null);
 
   const movies = useAppSelector((state) => state.movies);
   const dispatch = useAppDispatch();
@@ -31,11 +33,19 @@ function App() {
 
   const handlePagination = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
-    dispatch(fetchMovies({ title, page: value }));
+    dispatch(fetchMovies({ title, page: value, year, type }));
   };
 
   const handleText = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+  };
+
+  const toggleType = (value: "movie" | "series" | "episode") => {
+    setType((prevType) => (prevType !== value ? value : null));
+    setPage(1);
+    dispatch(
+      fetchMovies({ title, page: 1, year, type: type !== value ? value : null })
+    );
   };
 
   return (
@@ -49,14 +59,49 @@ function App() {
             value={title}
             onChange={handleText}
           />
+          <TextField
+            id="outlined-basic"
+            label="Year"
+            variant="outlined"
+            value={year}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setYear(Number(event.target.value));
+            }}
+          />
           <Button
             variant="contained"
             onClick={() => {
               setPage(1);
-              dispatch(fetchMovies({ title, page: 1 }));
+              dispatch(fetchMovies({ title, page: 1, year }));
             }}
           >
             Search
+          </Button>
+        </Stack>
+        <Stack direction="row" my={4} spacing={3}>
+          <Button
+            variant={type === "movie" ? "contained" : "outlined"}
+            onClick={() => {
+              toggleType("movie");
+            }}
+          >
+            movies
+          </Button>
+          <Button
+            variant={type === "series" ? "contained" : "outlined"}
+            onClick={() => {
+              toggleType("series");
+            }}
+          >
+            TV series
+          </Button>
+          <Button
+            variant={type === "episode" ? "contained" : "outlined"}
+            onClick={() => {
+              toggleType("episode");
+            }}
+          >
+            TV series episodes
           </Button>
         </Stack>
         {movies.data && movies.data.Search && (

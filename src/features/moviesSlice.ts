@@ -29,14 +29,24 @@ const initialState: MovieState = {
 
 export const fetchMovies = createAsyncThunk(
   "fetchMovies",
-  async (args: { title: string; page: number }) => {
-    const response = await axios.get<Movies>(
-      `http://www.omdbapi.com/?s=${args.title}&page=${args.page}&apikey=${
-        import.meta.env.VITE_API_KEY
-      }`
-    );
-    console.log(response.data);
-    
+  async (args: {
+    title: string;
+    page: number;
+    year?: number | "";
+    type?: "movie" | "series" | "episode" | null;
+  }) => {
+    let endpoint = `http://www.omdbapi.com/?s=${args.title}&page=${args.page}`;
+
+    if (args.type) {
+      endpoint += `&type=${args.type}`;
+    }
+    if (args.year) {
+      endpoint += `&y=${args.year}`;
+    }
+    endpoint += `&apikey=${import.meta.env.VITE_API_KEY}`;
+
+    const response = await axios.get<Movies>(endpoint);
+
     return response.data;
   }
 );
