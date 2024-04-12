@@ -27,13 +27,19 @@ const initialState: MovieState = {
   error: "",
 };
 
-export const fetchMovies = createAsyncThunk("fetchMovies", async () => {
-  const response = await axios.get<Movies>(
-    `http://www.omdbapi.com/?s=Pokemon&page=1&apikey=${import.meta.env.VITE_API_KEY}`
-  );
-  
-  return response.data;
-});
+export const fetchMovies = createAsyncThunk(
+  "fetchMovies",
+  async (args: { title: string; page: number }) => {
+    const response = await axios.get<Movies>(
+      `http://www.omdbapi.com/?s=${args.title}&page=${args.page}&apikey=${
+        import.meta.env.VITE_API_KEY
+      }`
+    );
+    console.log(response.data);
+    
+    return response.data;
+  }
+);
 
 const moviesSlice = createSlice({
   name: "movies",

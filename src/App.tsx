@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "./App.css";
 import { useAppDispatch, useAppSelector } from "./store";
 import { fetchMovies } from "./features/moviesSlice";
 import {
   Box,
   Container,
+  Pagination,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -15,12 +17,19 @@ import {
 } from "@mui/material";
 
 function App() {
+  const [page, setPage] = useState(1);
+
   const movies = useAppSelector((state) => state.movies);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchMovies());
+    dispatch(fetchMovies({ title: "Pokemon", page }));
   }, []);
+
+  const handleChange = (event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    dispatch(fetchMovies({ title: "Pokemon", page: value }));
+  };
 
   return (
     <Container>
@@ -51,6 +60,15 @@ function App() {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+        {movies.data && movies.data.Search && (
+          <Stack my={4} alignItems="center">
+            <Pagination
+              count={Math.round(parseInt(movies.data.totalResults) / 10)}
+              page={page}
+              onChange={handleChange}
+            />
+          </Stack>
         )}
       </Box>
     </Container>
