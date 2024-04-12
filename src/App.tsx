@@ -1,9 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import "./App.css";
-import { useAppDispatch, useAppSelector } from "./store";
-import { fetchMovies } from "./features/moviesSlice";
 import {
   Box,
+  Button,
   Container,
   Pagination,
   Paper,
@@ -14,26 +13,52 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "./store";
+import { fetchMovies } from "./features/moviesSlice";
 
 function App() {
   const [page, setPage] = useState(1);
+  const [title, setTitle] = useState("Pokemon");
 
   const movies = useAppSelector((state) => state.movies);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchMovies({ title: "Pokemon", page }));
+    dispatch(fetchMovies({ title, page }));
   }, []);
 
-  const handleChange = (event: ChangeEvent<unknown>, value: number) => {
+  const handlePagination = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
-    dispatch(fetchMovies({ title: "Pokemon", page: value }));
+    dispatch(fetchMovies({ title, page: value }));
+  };
+
+  const handleText = (event: ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
   };
 
   return (
     <Container>
       <Box sx={{ my: 4 }}>
+        <Stack direction="row" my={4} spacing={3}>
+          <TextField
+            id="outlined-basic"
+            label="Type movie"
+            variant="outlined"
+            value={title}
+            onChange={handleText}
+          />
+          <Button
+            variant="contained"
+            onClick={() => {
+              setPage(1);
+              dispatch(fetchMovies({ title, page: 1 }));
+            }}
+          >
+            Search
+          </Button>
+        </Stack>
         {movies.data && movies.data.Search && (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -66,7 +91,7 @@ function App() {
             <Pagination
               count={Math.round(parseInt(movies.data.totalResults) / 10)}
               page={page}
-              onChange={handleChange}
+              onChange={handlePagination}
             />
           </Stack>
         )}
