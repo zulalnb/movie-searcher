@@ -39,14 +39,14 @@ function MovieDetail() {
                 style={{ objectFit: "contain" }}
               />
               <Box>
-                <Box>
-                  <Typography variant="h5" component="h2" fontWeight="bold">
-                    Storyline
-                  </Typography>
-                  <Typography variant="body1">
-                    {movie.data.Plot}
-                  </Typography>
-                </Box>
+                {movie.data.Plot !== "N/A" && (
+                  <Box px={2}>
+                    <Typography variant="h5" component="h2" fontWeight="bold">
+                      Storyline
+                    </Typography>
+                    <Typography variant="body1">{movie.data.Plot}</Typography>
+                  </Box>
+                )}
                 <Stack direction="row" justifyContent="space-between" mt={4}>
                   <Table
                     aria-label="simple table"
@@ -57,52 +57,72 @@ function MovieDetail() {
                       <TableCell variant="head" width="30%">
                         IMDb rating
                       </TableCell>
-                      <TableCell>{movie.data.imdbRating}</TableCell>
+                      <TableCell>
+                        {movie.data.imdbRating !== "N/A"
+                          ? movie.data.imdbRating
+                          : "-"}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell variant="head" width="30%">
                         Release Date
                       </TableCell>
-                      <TableCell>{movie.data.Released}</TableCell>
+                      <TableCell>
+                        {movie.data.Released !== "N/A"
+                          ? movie.data.Released
+                          : "-"}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell variant="head" width="30%">
                         Genre(s)
                       </TableCell>
-                      <TableCell>{movie.data.Genre}</TableCell>
+                      <TableCell>
+                        {movie.data.Genre !== "N/A" ? movie.data.Genre : "-"}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell variant="head" width="30%">
                         Countries
                       </TableCell>
-                      <TableCell>{movie.data.Country}</TableCell>
+                      <TableCell>
+                        {movie.data.Country !== "N/A"
+                          ? movie.data.Country
+                          : "-"}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell variant="head" width="20%">
+                      <TableCell variant="head" width="30%">
                         Duration
                       </TableCell>
-                      <TableCell>{movie.data.Runtime}</TableCell>
+                      <TableCell>
+                        {movie.data.Runtime !== "N/A"
+                          ? movie.data.Runtime
+                          : "-"}
+                      </TableCell>
                     </TableRow>
                   </Table>
-                  <Box>
-                    <Typography variant="h6" component="h2" fontWeight="bold">
-                      Director
-                    </Typography>
-                    <Typography variant="body1">
-                      {movie.data.Director}
-                    </Typography>
-                  </Box>
+                  {movie.data.Director !== "N/A" && (
+                    <Box>
+                      <Typography variant="h6" component="h2" fontWeight="bold">
+                        Director
+                      </Typography>
+                      <Typography variant="body1">
+                        {movie.data.Director}
+                      </Typography>
+                    </Box>
+                  )}
                 </Stack>
               </Box>
             </Stack>
-            <Box mt={5} >
-              <Typography variant="h5" component="h2" fontWeight="bold">
-                Cast
-              </Typography>
-              <Typography variant="body1">
-                {movie.data.Actors}
-              </Typography>
-            </Box>
+            {movie.data.Actors !== "N/A" && (
+              <Box mt={5}>
+                <Typography variant="h5" component="h2" fontWeight="bold">
+                  Cast
+                </Typography>
+                <Typography variant="body1">{movie.data.Actors}</Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       )}
