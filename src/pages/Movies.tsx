@@ -1,10 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
   Container,
   Pagination,
+  PaginationItem,
   Paper,
   Stack,
   Table,
@@ -19,22 +20,28 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { fetchMovies } from "../features/moviesSlice";
 
 function Movies() {
-  const [page, setPage] = useState(1);
-  const [title, setTitle] = useState("Pokemon");
-  const [year, setYear] = useState<number | "">("");
-  const [type, setType] = useState<"movie" | "series" | "episode" | null>(null);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const [title, setTitle] = useState(query.get("title") || "Pokemon");
+  const [year, setYear] = useState<number | "">(
+    Number(query.get("year")) || ""
+  );
+  const [type, setType] = useState<"movie" | "series" | "episode" | "all">(
+    (query.get("type") as "movie" | "series" | "episode" | "all") ?? "all"
+  );
 
   const movies = useAppSelector((state) => state.movies.movies);
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
+  const page = parseInt(query.get("page") || "1", 10);
+
   useEffect(() => {
-    dispatch(fetchMovies({ title, page }));
+    dispatch(fetchMovies({ title, page, year, type }));
   }, []);
 
   const handlePagination = (event: ChangeEvent<unknown>, value: number) => {
-    setPage(value);
     dispatch(fetchMovies({ title, page: value, year, type }));
   };
 
@@ -43,10 +50,22 @@ function Movies() {
   };
 
   const toggleType = (value: "movie" | "series" | "episode") => {
-    setType((prevType) => (prevType !== value ? value : null));
-    setPage(1);
+    setType((prevType) => (prevType !== value ? value : "all"));
+    let route = `/?title=${title}`;
+    if (year) {
+      route += `&year=${year}`;
+    }
+    if (value !== type) {
+      route += `&type=${value}`;
+    }
+    navigate(route);
     dispatch(
-      fetchMovies({ title, page: 1, year, type: type !== value ? value : null })
+      fetchMovies({
+        title,
+        page: 1,
+        year,
+        type: type !== value ? value : "all",
+      })
     );
   };
 
@@ -73,7 +92,12 @@ function Movies() {
           <Button
             variant="contained"
             onClick={() => {
-              setPage(1);
+              let route = `/?title=${title}`;
+              if (year) {
+                route += `&year=${year}`;
+              }
+              navigate(route);
+              setType("all");
               dispatch(fetchMovies({ title, page: 1, year }));
             }}
           >
@@ -145,6 +169,17 @@ function Movies() {
               count={Math.round(parseInt(movies.data.totalResults) / 10)}
               page={page}
               onChange={handlePagination}
+              renderItem={(item) => {
+                let route = `/?title=${title}`;
+                if (query.get("year")) {
+                  route += `&year=${query.get("year")}`;
+                }
+                if (query.get("type")) {
+                  route += `&type=${query.get("type")}`;
+                }
+                route += item.page === 1 ? "" : `&page=${item.page}`;
+                return <PaginationItem component={Link} to={route} {...item} />;
+              }}
             />
           </Stack>
         )}

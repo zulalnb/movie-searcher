@@ -84,11 +84,11 @@ export const fetchMovies = createAsyncThunk(
     title: string;
     page: number;
     year?: number | "";
-    type?: "movie" | "series" | "episode" | null;
+    type?: "movie" | "series" | "episode" | "all";
   }) => {
     let endpoint = `http://www.omdbapi.com/?s=${args.title}&page=${args.page}`;
-
-    if (args.type) {
+    
+    if (args.type && args.type !== "all") {
       endpoint += `&type=${args.type}`;
     }
     if (args.year) {
