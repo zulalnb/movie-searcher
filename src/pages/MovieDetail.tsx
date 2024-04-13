@@ -8,9 +8,12 @@ import {
   TableCell,
   TableRow,
   Typography,
+  styled,
+  tableCellClasses,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../store";
 import { fetchMovieDetail } from "../features/moviesSlice";
+import Navbar from "../components/Navbar";
 
 function MovieDetail() {
   const { imdbId } = useParams<{ imdbId?: string }>();
@@ -23,11 +26,27 @@ function MovieDetail() {
     }
   }, [imdbId]);
 
+  const StyledTableCell = styled(TableCell)({
+    color: "#FFFFFF",
+    [`&.${tableCellClasses.head}`]: {
+      color: "#FFFFFF",
+    },
+    [`&.${tableCellClasses.body}`]: {
+      color: "#FFFFFF",
+    },
+  });
+
   return (
     <Container>
+      <Navbar />
       {!!movie.data && (
         <Box sx={{ my: 4 }}>
-          <Typography variant="h2" component="h1" fontWeight="bold">
+          <Typography
+            variant="h2"
+            component="h1"
+            fontWeight="bold"
+            color="#FFFFFF"
+          >
             {movie.data.Title}
           </Typography>
           <Box mt={4}>
@@ -41,10 +60,17 @@ function MovieDetail() {
               <Box>
                 {movie.data.Plot !== "N/A" && (
                   <Box px={2}>
-                    <Typography variant="h5" component="h2" fontWeight="bold">
+                    <Typography
+                      variant="h5"
+                      component="h2"
+                      fontWeight="bold"
+                      color="#FFFFFF"
+                    >
                       Storyline
                     </Typography>
-                    <Typography variant="body1">{movie.data.Plot}</Typography>
+                    <Typography variant="body1" color="#FFFFFF">
+                      {movie.data.Plot}
+                    </Typography>
                   </Box>
                 )}
                 <Stack direction="row" justifyContent="space-between" mt={4}>
@@ -54,60 +80,65 @@ function MovieDetail() {
                     sx={{ width: "70%", "td, th": { border: 0 } }}
                   >
                     <TableRow>
-                      <TableCell variant="head" width="30%">
+                      <StyledTableCell variant="head" width="30%">
                         IMDb rating
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         {movie.data.imdbRating !== "N/A"
                           ? movie.data.imdbRating
                           : "-"}
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell variant="head" width="30%">
+                      <StyledTableCell variant="head" width="30%">
                         Release Date
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         {movie.data.Released !== "N/A"
                           ? movie.data.Released
                           : "-"}
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell variant="head" width="30%">
+                      <StyledTableCell variant="head" width="30%">
                         Genre(s)
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         {movie.data.Genre !== "N/A" ? movie.data.Genre : "-"}
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell variant="head" width="30%">
+                      <StyledTableCell variant="head" width="30%">
                         Countries
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         {movie.data.Country !== "N/A"
                           ? movie.data.Country
                           : "-"}
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell variant="head" width="30%">
+                      <StyledTableCell variant="head" width="30%">
                         Duration
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         {movie.data.Runtime !== "N/A"
                           ? movie.data.Runtime
                           : "-"}
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                   </Table>
                   {movie.data.Director !== "N/A" && (
                     <Box>
-                      <Typography variant="h6" component="h2" fontWeight="bold">
+                      <Typography
+                        variant="h6"
+                        component="h2"
+                        fontWeight="bold"
+                        color="#FFFFFF"
+                      >
                         Director
                       </Typography>
-                      <Typography variant="body1">
+                      <Typography variant="body1" color="#FFFFFF">
                         {movie.data.Director}
                       </Typography>
                     </Box>
@@ -117,10 +148,17 @@ function MovieDetail() {
             </Stack>
             {movie.data.Actors !== "N/A" && (
               <Box mt={5}>
-                <Typography variant="h5" component="h2" fontWeight="bold">
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  fontWeight="bold"
+                  color="#FFFFFF"
+                >
                   Cast
                 </Typography>
-                <Typography variant="body1">{movie.data.Actors}</Typography>
+                <Typography variant="body1" color="#FFFFFF">
+                  {movie.data.Actors}
+                </Typography>
               </Box>
             )}
           </Box>
