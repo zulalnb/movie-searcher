@@ -1,10 +1,4 @@
-import {
-  Route,
-  BrowserRouter as Router,
-  RouterProvider,
-  Routes,
-  createBrowserRouter,
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Movies from "./pages/Movies";
 import MovieDetail from "./pages/MovieDetail";
 
