@@ -22,13 +22,12 @@ import { fetchMovies } from "../features/moviesSlice";
 function Movies() {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const [title, setTitle] = useState(query.get("title") || "Pokemon");
-  const [year, setYear] = useState<number | "">(
-    Number(query.get("year")) || ""
-  );
-  const [type, setType] = useState<"movie" | "series" | "episode" | "all">(
-    (query.get("type") as "movie" | "series" | "episode" | "all") ?? "all"
-  );
+  const title = query.get("title") || "Pokemon";
+  const year = Number(query.get("year")) || "";
+  const type =
+    (query.get("type") as "movie" | "series" | "episode" | "all") ?? "all";
+  const [searchedTitle, setSearchedTitle] = useState(title);
+  const [filteredYear, setFilteredYear] = useState<number | "">(year);
 
   const movies = useAppSelector((state) => state.movies.movies);
   const dispatch = useAppDispatch();
@@ -46,11 +45,10 @@ function Movies() {
   };
 
   const handleText = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    setSearchedTitle(event.target.value);
   };
 
   const toggleType = (value: "movie" | "series" | "episode") => {
-    setType((prevType) => (prevType !== value ? value : "all"));
     let route = `/?title=${title}`;
     if (year) {
       route += `&year=${year}`;
@@ -75,30 +73,45 @@ function Movies() {
         <Stack direction="row" my={4} spacing={3}>
           <TextField
             id="outlined-basic"
-            label="Type movie"
+            label="Search movie"
+            placeholder="Search movie"
             variant="outlined"
-            value={title}
+            value={searchedTitle}
             onChange={handleText}
           />
           <TextField
             id="outlined-basic"
             label="Year"
+            placeholder="Year"
             variant="outlined"
-            value={year}
+            value={filteredYear}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setYear(Number(event.target.value));
+              const isValid =
+                Number(event.target.value) &&
+                (Number(event.target.value[0]) === 1 ||
+                  Number(event.target.value[0]) === 2);
+              if (event.target.value.length < 5) {
+                setFilteredYear(isValid ? Number(event.target.value) : "");
+              }
             }}
           />
           <Button
             variant="contained"
             onClick={() => {
-              let route = `/?title=${title}`;
-              if (year) {
-                route += `&year=${year}`;
+              if (searchedTitle) {
+                let route = `/?title=${searchedTitle}`;
+                if (filteredYear) {
+                  route += `&year=${filteredYear}`;
+                }
+                navigate(route);
+                dispatch(
+                  fetchMovies({
+                    title: searchedTitle,
+                    page: 1,
+                    year: filteredYear,
+                  })
+                );
               }
-              navigate(route);
-              setType("all");
-              dispatch(fetchMovies({ title, page: 1, year }));
             }}
           >
             Search
@@ -166,16 +179,19 @@ function Movies() {
         {movies.data && movies.data.Search && (
           <Stack my={4} alignItems="center">
             <Pagination
-              count={Math.round(parseInt(movies.data.totalResults) / 10)}
+              count={Math.max(
+                Math.round(parseInt(movies.data.totalResults) / 10),
+                1
+              )}
               page={page}
               onChange={handlePagination}
               renderItem={(item) => {
                 let route = `/?title=${title}`;
-                if (query.get("year")) {
-                  route += `&year=${query.get("year")}`;
+                if (year) {
+                  route += `&year=${year}`;
                 }
-                if (query.get("type")) {
-                  route += `&type=${query.get("type")}`;
+                if (type) {
+                  route += `&type=${type}`;
                 }
                 route += item.page === 1 ? "" : `&page=${item.page}`;
                 return <PaginationItem component={Link} to={route} {...item} />;
